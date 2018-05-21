@@ -1,0 +1,717 @@
+
+<style>
+    #ss-shell {
+      position: relative;
+      margin: 10% auto 10% auto;
+      width: 400px;
+      height: 400px;
+      background-color: #1a1a1a;
+      border-radius: 50%;
+      z-index: 1;
+      padding: 0px;
+      box-shadow: 0px 0px 15px black;
+    }
+    
+    #ss-centerShell {
+      position: absolute;
+      top: 125px;
+      left: 125px;
+      margin: auto;
+      width: 150px;
+      height: 150px;
+      background-color: #1a1a1a;
+      border-radius: 50%;
+      z-index: 6;
+    }
+    
+    #ss-innerCenterShell {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      margin: auto;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background-color: silver;
+      text-align: center;
+      color: #1a1a1a;
+      font-family: sans-serif;
+    }
+    
+    #ss-counter {
+      background-color: #660000;
+      height: 33px;
+      width: 40px;
+      position: absolute;
+      top: 57px;
+      left: 15px;
+      border-radius: 10px;
+      box-shadow: inset 0 0 8px #000000;
+    }
+    
+    #ss-counter-text {
+      position: relative;
+      top: -39px;
+      left: 4px;
+      color: red;
+      font-family: "VT323";
+      font-size: 36px;
+      text-align: left;
+      line-height: 1 !important
+    }
+    
+    #ss-start {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: darkgreen;
+      position: absolute;
+      top: 68px;
+      left: 70px;
+      box-shadow: 0px 2px 2px #888888;
+    }
+    
+    #ss-start:active {
+      top: 70px;
+      box-shadow: 0px 0px 0px #888888;
+    }
+    
+    #ss-strict {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: #333333;
+      position: absolute;
+      top: 68px;
+      left: 100px;
+      box-shadow: 1px 2px 2px #888888;
+    }
+    
+    #ss-strict-light {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #404040;
+      position: relative;
+      margin: auto;
+      top: 5px;
+    }
+    
+    #ss-strict:active {
+      top: 70px;
+      box-shadow: 0px 0px 0px #888888;
+    }
+    
+    #ss-onSwitch {
+      width: 35px;
+      height: 15px;
+      background-color: black;
+      position: absolute;
+      top: 95px;
+      left: 45px;
+    }
+    
+    #ss-switchButton {
+      position: absolute;
+      background-color: skyblue;
+      height: 10px;
+      width: 10px;
+      margin: 2px;
+    }
+    
+    #ss-shell svg {
+      width: 175px;
+      height: 175px;
+      position: relative;
+      margin: 10px;
+    }
+    
+    #ss-text {
+      position: absolute;
+      font-size: 12px;
+      left: 42px;
+      top: 110px;
+    }
+    
+    #ss-button-text {
+      position: absolute;
+      font-size: 12px;
+      top: 54px;
+      left: 67px;
+    }
+    
+    
+
+    /* #ss-shell h2 {
+      position: relative;
+      top: -5px;
+    } */
+</style>
+
+<div id="ss-letsplay" style="cursor:pointer;display:none">Bored?</div>
+<div id="ss-container" style="display:none;z-index:100">
+    <div id="ss-close-btn" style="width:1.25em;height:1.25em;text-align:center; border:2px solid red"><b>X</b></div>
+    <div id="ss-shell">
+        <svg id="ss-greenSvg">
+            <circle id="ss-greenPress" cx="200" cy="200" r="180" fill="#009900"></circle>
+        </svg>
+        <svg id="ss-redSvg">
+            <circle id="ss-redPress" cx="-20" cy="200" r="180" fill="#800000"></circle>
+        </svg>
+        <svg id="ss-yellowSvg">
+            <circle id="ss-yellowPress" cx="200" cy="-20" r="180" fill="#b2b300"></circle>
+        </svg>
+        <svg id="ss-blueSvg">
+            <circle id="ss-bluePress" cx="-20" cy="-20" r="180" fill="#000080"></circle>
+        </svg>
+        <div id="ss-centerShell">
+            <div id="ss-innerCenterShell">
+                <!--<h2>simon</h2>-->
+                <div id="ss-counter">
+                    <p id="ss-counter-text">
+                        <p></p>
+                    </p>
+                </div>
+                <div id="ss-start"></div>
+                <div id="ss-strict">
+                    <div id="ss-strict-light"></div>
+                </div>
+                <span id="ss-button-text">start <span style="color:silver">.</span>strict</span>
+                <div id="ss-onSwitch">
+                    <div id="ss-switchButton"></div>
+                </div>
+                <div id="ss-text">off <span style="color:silver">...</span> on</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        function addClickHandler(el,handler){
+            if (el.addEventListener) {
+                el.addEventListener('click', handler, false); 
+            } else if (el.attachEvent)  {
+                el.attachEvent('onclick', handler);
+            }
+        }
+        function centerScreen($el) {
+            $el.css("position","fixed");
+            $el.css("top", Math.max(0, (($(window).height() - $el.outerHeight()) / 2) + $(window).scrollTop()) + "px");
+            $el.css("left", Math.max(0, (($(window).width() - $el.outerWidth()) / 2) + $(window).scrollLeft()) + "px");
+        }
+        function blink(el,interval1,interval2,visibleOnStop){
+            var visibleTimout;
+            var blinkInterval;
+            this.start=function(){
+                el.style.visibility="visible"
+                blinkInterval=window.setInterval(function(){
+                    el.style.visibility="hidden"
+                    visibleTimout=window.setTimeout(function(){
+                        el.style.visibility="visible"
+                    },interval2);
+                },interval1);
+            }
+            this.stop=function(){
+                window.clearInterval(blinkInterval);
+                window.clearTimeout(visibleTimout);
+                if(visibleOnStop){
+                    el.style.visibility="visible"
+                }else{
+                    el.style.visibility="hidden"
+                }
+            }
+            this.start();
+        }
+
+        var simonSaysSetup=false;
+        var letsPlay=document.getElementById("ss-letsplay");
+        letsPlay.style.display="block";
+        
+        var ssContainer=document.getElementById("ss-container");
+        var closeButton=document.getElementById("ss-close-btn");
+        
+        var blinker=new blink(letsPlay,3000,500,false);
+        addClickHandler(letsPlay,playSimonSays);
+        addClickHandler(closeButton,function(){
+            ssContainer.style.display="none";
+            blinker.start();
+        });
+        
+        
+        function playSimonSays(){
+            blinker.stop();
+            
+            if(!simonSaysSetup){
+                simonSays(function(){
+                    ssContainer.style.display="block";
+                    centerScreen($(ssContainer));
+                    simonSaysSetup=true;
+                });
+            }else{
+                ssContainer.style.display="block";
+                centerScreen($(ssContainer));
+            }
+        }
+        
+        function simonSays(loadedCallback){
+            var jqueryIsLoaded=false;
+            var snapLoaded=false;
+            function loadFont(){
+                var link=document.createElement('link');
+                link.rel="stylesheet";
+                link.href="https://fonts.googleapis.com/css?family=VT323";
+                document.head.appendChild(link);
+            }
+            function loadJquery(){
+                if(!window.jQuery){
+                    var script = document.createElement('script');
+
+                    script.src = "https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js";
+                    script.onload=function(){
+                        jqueryIsLoaded=true;
+                        setUpIfLoaded();
+                    }
+                    document.head.appendChild(script);
+                }else{
+                    jqueryIsLoaded=true;
+                }
+            }
+            function loadSnap(){
+                if(!window.Snap){
+                    var script = document.createElement('script');
+                    script.src = "https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.3.0/snap.svg-min.js";
+                    script.onload=function(){
+                        snapLoaded=true;
+                        setUpIfLoaded();
+                    }
+                    document.head.appendChild(script);
+                }else{
+                    snapLoaded=true;
+                }
+                
+            }
+            function loadScripts(){
+                loadJquery();
+                loadSnap();
+                setUpIfLoaded();
+            }
+            function loadAssets(){
+                loadFont();
+                loadScripts();
+            }
+            function setUpGame(){
+                //this is 'level1' there other levels......
+                var timeBetweenPlayback=1500;    
+                var switchStatus = false;
+                var strictStatus = false;
+                var gameStatus = false;
+                var userPress = [];
+                var pressSeries = [];
+                var redBeep = new Audio(
+                    "https://s3.amazonaws.com/freecodecamp/simonSound2.mp3"
+                );
+                var greenBeep = new Audio(
+                    "https://s3.amazonaws.com/freecodecamp/simonSound1.mp3"
+                );
+                var blueBeep = new Audio(
+                    "https://s3.amazonaws.com/freecodecamp/simonSound3.mp3"
+                );
+                var yellowBeep = new Audio(
+                    "https://s3.amazonaws.com/freecodecamp/simonSound4.mp3"
+                );
+                var wrongBeep = new Audio(
+                    "https://s3-us-west-2.amazonaws.com/s.cdpn.io/308710/beep-wrong.mp3"
+                );
+                var winSound = new Audio(
+                    "https://s3-us-west-2.amazonaws.com/s.cdpn.io/308710/winSound.mp3"
+                );
+                var greenSvg = Snap("#ss-greenSvg");
+                var greenPress = greenSvg.select("circle");
+                var redSvg = Snap("#ss-redSvg");
+                var redPress = redSvg.select("circle");
+                var yellowSvg = Snap("#ss-yellowSvg");
+                var yellowPress = yellowSvg.select("circle");
+                var blueSvg = Snap("#ss-blueSvg");
+                var bluePress = blueSvg.select("circle");
+
+                function reset() {
+                    $("#ss-counter-text").text("--");
+                    pressSeries = [];
+                    userPress = [];
+                    gameStatus = false;
+                }
+
+                $("#ss-onSwitch").click(function() {
+                    if (switchStatus == false) {
+                        $("#ss-switchButton").animate({
+                            left: "20px"
+                        });
+                        switchStatus = true;
+                        reset();
+                    } else {
+                        $("#ss-switchButton").animate({
+                            left: "0px"
+                        });
+                        $("#ss-counter-text").text("");
+                        switchStatus = false;
+                        strictStatus = false;
+                        $("#ss-strict-light").css(
+                            "background-color",
+                            "#404040",
+                            "border",
+                            "0px solid #262626"
+                        );
+                        pressSeries = [];
+                        userPress = [];
+                        gameStatus = false;
+                    }
+                });
+
+                $("#ss-strict").click(function() {
+                    if (switchStatus == true) {
+                        if (strictStatus == false) {
+                            $("#ss-strict-light").css(
+                                "background-color",
+                                "red",
+                                "border",
+                                "1px solid #262626"
+                            );
+                            strictStatus = true;
+                        } else {
+                            $("#ss-strict-light").css(
+                                "background-color",
+                                "#404040",
+                                "border",
+                                "0px solid #262626"
+                            );
+                            strictStatus = false;
+                        }
+                    }
+                });
+
+                function randomPress() {
+                    var randomChoice = Math.random();
+                    if (randomChoice <= 0.25) {
+                        return "green";
+                    } else if (randomChoice <= 0.5) {
+                        return "red";
+                    } else if (randomChoice <= 0.75) {
+                        return "blue";
+                    } else {
+                        return "yellow";
+                    }
+                }
+
+                function greenPlay() {
+                    greenBeep.play();
+                    $("#ss-greenPress").css("fill", "#00ff00");
+                    greenPress.animate(
+                        {
+                            fill: "#009900"
+                        },
+                        500
+                    );
+                }
+
+                function redPlay() {
+                    redBeep.play();
+                    $("#ss-redPress").css("fill", "red");
+                    redPress.animate(
+                        {
+                            fill: "#800000"
+                        },
+                        500
+                    );
+                }
+
+                function bluePlay() {
+                    blueBeep.play();
+                    $("#ss-bluePress").css("fill", "#0000FF");
+                    bluePress.animate(
+                        {
+                            fill: "#000080"
+                        },
+                        500
+                    );
+                }
+
+                function yellowPlay() {
+                    yellowBeep.play();
+                    $("#ss-yellowPress").css("fill", "#FFFF00");
+                    yellowPress.animate(
+                        {
+                            fill: "#b2b300"
+                        },
+                        500
+                    );
+                }
+
+                $("#ss-redPress").click(function() {
+                    if (switchStatus === true) {
+                        if (gameStatus === true && userPress.length < pressSeries.length) {
+                            userPress.push("red");
+                            redPlay();
+                            if (userPress.length === pressSeries.length) {
+                                playGame();
+                            }
+                        }
+                    }
+                });
+
+                $("#ss-greenPress").click(function() {
+                    if (switchStatus === true) {
+                        if (gameStatus === true && userPress.length < pressSeries.length) {
+                            userPress.push("green");
+                            greenPlay();
+                            if (userPress.length === pressSeries.length) {
+                                playGame();
+                            }
+                        }
+                    }
+                });
+
+                $("#ss-bluePress").click(function() {
+                    if (switchStatus === true) {
+                        if (gameStatus === true && userPress.length < pressSeries.length) {
+                            userPress.push("blue");
+                            bluePlay();
+                            if (userPress.length === pressSeries.length) {
+                                playGame();
+                            }
+                        }
+                    }
+                });
+
+                $("#ss-yellowPress").click(function() {
+                    if (switchStatus === true) {
+                        if (gameStatus === true && userPress.length < pressSeries.length) {
+                            userPress.push("yellow");
+                            yellowPlay();
+                            if (userPress.length === pressSeries.length) {
+                                playGame();
+                            }
+                        }
+                    }
+                });
+
+                $("#ss-start").click(function() {
+                    //step 1
+                    if (switchStatus === true) {
+                        gameStatus = true;
+                        pressSeries = [];
+                        userPress = [];
+                        playGame();
+                    }
+                });
+
+                function playPress(x) {
+                    switch (x) {
+                        case "green":
+                            greenBeep.play();
+                            $("#ss-greenPress").css("fill", "#00ff00");
+                            greenPress.animate(
+                                {
+                                    fill: "#009900"
+                                },
+                                500
+                            );
+                        break;
+                        case "red":
+                            redBeep.play();
+                            $("#ss-redPress").css("fill", "red");
+                            redPress.animate(
+                                {
+                                    fill: "#800000"
+                                },
+                                500
+                            );
+                        break;
+                        case "yellow":
+                            yellowBeep.play();
+                            $("#ss-yellowPress").css("fill", "#FFFF00");
+                            yellowPress.animate(
+                                {
+                                    fill: "#b2b300"
+                                },
+                                500
+                            );
+                        break;
+                        case "blue":
+                            blueBeep.play();
+                            $("#ss-bluePress").css("fill", "#0000FF");
+                            bluePress.animate(
+                                {
+                                    fill: "#000080"
+                                },
+                                500
+                            );
+                    }
+                }
+
+                function playWrongBeep() {
+                    wrongBeep.play();
+                }
+
+                function playGame() {
+                    gameStatus = false;
+                    if (pressSeries.length === 0) {
+                        pressSeries.push(randomPress());
+                        $("#ss-counter-text").text("01");
+                        playPress(pressSeries[0]);
+                    } else if (pressSeries.length >= 1 && pressSeries.length <= 4) {
+                        var isIdentical = false;
+                        if (
+                        userPress.length == pressSeries.length &&
+                        userPress.every(function(element, index) {
+                            return element === pressSeries[index];
+                        }) === true
+                        ) {
+                            isIdentical = true;
+                        }
+                        if (isIdentical === true) {
+                            pressSeries.push(randomPress());
+                            for (i = 0; i < pressSeries.length; i++) {
+                                $("#ss-counter-text").text("0" + (i + 1));
+                                setTimeout(playPress, timeBetweenPlayback * (i + 1), pressSeries[i]);
+                            }
+                            userPress = [];
+                        } else {
+                            if (strictStatus === true) {
+                                setTimeout(playWrongBeep, 400);
+                                $("#ss-counter-text").text("XX");
+                                setTimeout(reset, 2000);
+                            } else {
+                                setTimeout(playWrongBeep, 400);
+                                for (i = 0; i < pressSeries.length; i++) {
+                                setTimeout(playPress, timeBetweenPlayback* (i + 1), pressSeries[i]);
+                                }
+                                userPress = [];
+                            }
+                        }
+                    } else if (pressSeries.length >= 5 && pressSeries.length <= 8) {
+                        var isIdentical = false;
+                        if (
+                        userPress.length == pressSeries.length &&
+                        userPress.every(function(element, index) {
+                            return element === pressSeries[index];
+                        }) === true
+                        ) {
+                            isIdentical = true;
+                        }
+                        if (isIdentical === true) {
+                            pressSeries.push(randomPress());
+                            for (i = 0; i < pressSeries.length; i++) {
+                                $("#ss-counter-text").text("0" + (i + 1));
+                                setTimeout(playPress, 1200 * (i + 1), pressSeries[i]);
+                            }
+                            userPress = [];
+                        } else {
+                            if (strictStatus === true) {
+                                setTimeout(playWrongBeep, 400);
+                                $("#ss-counter-text").text("XX");
+                                setTimeout(reset, 2000);
+                            } else {
+                                setTimeout(playWrongBeep, 400);
+                                for (i = 0; i < pressSeries.length; i++) {
+                                setTimeout(playPress, timeBetweenPlayback* (i + 1), pressSeries[i]);
+                                }
+                                userPress = [];
+                            }
+                        }
+                    } else if (pressSeries.length >= 9 && pressSeries.length <= 12) {
+                        var isIdentical = false;
+                        if (
+                        userPress.length == pressSeries.length &&
+                        userPress.every(function(element, index) {
+                            return element === pressSeries[index];
+                        }) === true
+                        ) {
+                            isIdentical = true;
+                        }
+                        if (isIdentical === true) {
+                            pressSeries.push(randomPress());
+                            for (i = 0; i < pressSeries.length; i++) {
+                                if (pressSeries.length > 9) {
+                                $("#ss-counter-text").text(i + 1);
+                                } else {
+                                $("#ss-counter-text").text("0" + (i + 1));
+                                }
+                                setTimeout(playPress, 900 * (i + 1), pressSeries[i]);
+                            }
+                            userPress = [];
+                        } else {
+                            if (strictStatus === true) {
+                                setTimeout(playWrongBeep, 400);
+                                $("#ss-counter-text").text("XX");
+                                setTimeout(reset, 2000);
+                            } else {
+                                setTimeout(playWrongBeep, 400);
+                                for (i = 0; i < pressSeries.length; i++) {
+                                setTimeout(playPress, timeBetweenPlayback * (i + 1), pressSeries[i]);
+                                }
+                                userPress = [];
+                            }
+                        }
+                    } else if (pressSeries.length >= 13 && pressSeries.length <= 19) {
+                        var isIdentical = false;
+                        if (
+                        userPress.length == pressSeries.length &&
+                        userPress.every(function(element, index) {
+                            return element === pressSeries[index];
+                        }) === true
+                        ) {
+                            isIdentical = true;
+                        }
+                        if (isIdentical === true) {
+                            pressSeries.push(randomPress());
+                            for (i = 0; i < pressSeries.length; i++) {
+                                $("#ss-counter-text").text(i + 1);
+                                setTimeout(playPress, 700 * (i + 1), pressSeries[i]);
+                            }
+                            userPress = [];
+                        } else {
+                            if (strictStatus === true) {
+                                setTimeout(playWrongBeep, 400);
+                                $("#ss-counter-text").text("XX");
+                                setTimeout(reset, 2000);
+                            } else {
+                                setTimeout(playWrongBeep, 400);
+                                for (i = 0; i < pressSeries.length; i++) {
+                                    setTimeout(playPress, timeBetweenPlayback* (i + 1), pressSeries[i]);
+                                }
+                                userPress = [];
+                            }
+                        }
+                    } else if (pressSeries.length === 20) {
+                        var isIdentical = false;
+                        if (
+                        userPress.length == pressSeries.length &&
+                        userPress.every(function(element, index) {
+                            return element === pressSeries[index];
+                        }) === true
+                        ) {
+                            isIdentical = true;
+                        }
+                        if (isIdentical === true) {
+                            $("#ss-counter-text").text("!!");
+                            setTimeout(winSound.play, 700);
+                            setTimeout(reset, 2000);
+                        }
+                    }
+                    gameStatus = true;
+                    }
+            };
+            function setUpIfLoaded(){
+                if(jqueryIsLoaded&&snapLoaded){
+                    setUpGame();
+                    if(loadedCallback){
+                        loadedCallback();
+                    }
+                }
+            }
+            loadAssets();
+        }
+    })();
+</script>
+

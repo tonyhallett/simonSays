@@ -1,0 +1,14 @@
+{
+  "name": "simonsays",
+  "version": "1.0.0",
+  "description": "Simon says for blogger html/javascript widget",
+  "author": {
+    "name": "Tony Hallett",
+    "email": "tonyhallett74@gmail.com",
+    "url": ""
+  },
+  "repository": "github:tonyhallett/simonSays",
+  "homepage": "https://github.com/tonyhallett/simonSays",
+  "bugs": "https://github.com/tonyhallett/simonSays/issues",
+  "license": "ISC"
+}
