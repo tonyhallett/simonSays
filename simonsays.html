@@ -197,8 +197,8 @@
         }
         function centerScreen($el) {
             $el.css("position","fixed");
-            $el.css("top", Math.max(0, (($(window).height() - $el.outerHeight()) / 2) + $(window).scrollTop()) + "px");
-            $el.css("left", Math.max(0, (($(window).width() - $el.outerWidth()) / 2) + $(window).scrollLeft()) + "px");
+            $el.css("top", Math.max(0, (($(window).height() - $el.outerHeight()) / 2)) + "px");
+            $el.css("left", Math.max(0, (($(window).width() - $el.outerWidth()) / 2)) + "px");
         }
         function blink(el,interval1,interval2,visibleOnStop){
             var visibleTimout;
