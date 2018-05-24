@@ -1,6 +1,6 @@
 # What it is
 
-Html to copy from simonsays.html and paste inside a blogger HTML/Javascript gadget.  The core functionality is provided by the simonSays function which will dynamically load jQuery and Snap if the global variables are not defined.
+Html to copy from simonsaysmin.html and paste inside a blogger HTML/Javascript gadget.  The core functionality is provided by the simonSays function which will dynamically load jQuery and Snap if the global variables are not defined.
 
 ## How it works
 

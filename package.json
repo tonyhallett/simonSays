@@ -10,5 +10,9 @@
   "repository": "github:tonyhallett/simonSays",
   "homepage": "https://github.com/tonyhallett/simonSays",
   "bugs": "https://github.com/tonyhallett/simonSays/issues",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^4.0.0",
+    "html-minifier": "^3.5.16"
+  }
 }
